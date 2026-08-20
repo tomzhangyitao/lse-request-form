@@ -99,13 +99,14 @@
 
     <label for="links">文章链接</label>
     <textarea id="links" placeholder="每行一个 DOI / 出版社链接 / press 链接"></textarea>
-    <div class="hint">填完后点“打开邮件发送”。收件人已经默认设置好了。</div>
+    <div class="hint">填完后点“用邮件发送”。如果手机没有反应，就点“复制邮件内容”，手动发到页面里显示的邮箱。</div>
 
     <div class="actions">
-      <button id="mailButton">打开邮件发送</button>
+      <a id="mailLink" class="button" href="mailto:tomzhangyitao@gmail.com?subject=%5BLSE-PDF-REQUEST%5D&body=LINKS%3A%0A">用邮件发送</a>
       <button id="copyButton" class="secondary">复制邮件内容</button>
     </div>
 
+    <div class="hint">收件人：tomzhangyitao@gmail.com<br>标题：[LSE-PDF-REQUEST]</div>
     <div id="preview"></div>
   </main>
 
@@ -120,25 +121,19 @@
         links
       ].join("\n");
       document.getElementById("preview").textContent = "Subject: " + subject + "\n\n" + body;
+      document.getElementById("mailLink").href = "mailto:" + ownerEmail +
+        "?subject=" + encodeURIComponent(subject) +
+        "&body=" + encodeURIComponent(body);
       return body;
     }
 
-    function mailto() {
-      const body = buildBody();
-      const url = "mailto:" + encodeURIComponent(ownerEmail) +
-        "?subject=" + encodeURIComponent(subject) +
-        "&body=" + encodeURIComponent(body);
-      window.location.href = url;
-    }
-
     async function copyBody() {
-      const body = "Subject: " + subject + "\n\n" + buildBody();
+      const body = "To: " + ownerEmail + "\nSubject: " + subject + "\n\n" + buildBody();
       await navigator.clipboard.writeText(body);
       document.getElementById("copyButton").textContent = "已复制";
       setTimeout(() => document.getElementById("copyButton").textContent = "复制邮件内容", 1200);
     }
 
-    document.getElementById("mailButton").addEventListener("click", mailto);
     document.getElementById("copyButton").addEventListener("click", copyBody);
     document.getElementById("links").addEventListener("input", buildBody);
     buildBody();
