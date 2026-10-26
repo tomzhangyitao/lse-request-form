@@ -256,6 +256,8 @@ let selectedLanguageIndex = 0;
 let cycleTimer;
 let carouselFrame;
 let carouselScrollLockUntil = 0;
+let carouselResetTimer;
+let selectedVirtualIndex = languages.length;
 
 const languageGradients = [
   "linear-gradient(145deg, #ff9a8b 0%, #ff6a88 48%, #6a5cff 100%)",
@@ -281,39 +283,66 @@ const languageGradients = [
 ];
 
 function populateLanguageCarousel() {
-  languages.forEach((language, index) => {
-    const slide = document.createElement("button");
-    slide.type = "button";
-    slide.className = "language-slide";
-    slide.dataset.index = String(index);
-    slide.dataset.language = language.code;
-    slide.setAttribute("role", "option");
-    slide.setAttribute("aria-selected", "false");
-    slide.style.setProperty("--slide-background", languageGradients[index]);
-    slide.innerHTML = `<span class="language-slide__greeting">${language.greeting}</span>`;
-    languageCarousel.append(slide);
-  });
+  for (let copy = 0; copy < 3; copy += 1) {
+    languages.forEach((language, index) => {
+      const slide = document.createElement("button");
+      slide.type = "button";
+      slide.className = "language-slide";
+      slide.dataset.index = String(index);
+      slide.dataset.virtualIndex = String(copy * languages.length + index);
+      slide.dataset.language = language.code;
+      slide.setAttribute("role", "option");
+      slide.setAttribute("aria-selected", "false");
+      slide.style.setProperty("--slide-background", languageGradients[index]);
+      slide.innerHTML = `<span class="language-slide__greeting">${language.greeting}</span>`;
+      languageCarousel.append(slide);
+    });
+  }
 }
 
-function selectLanguage(index, { scroll = false } = {}) {
+function selectLanguage(index, { scroll = false, virtualIndex = null, instant = false } = {}) {
   selectedLanguageIndex = Math.max(0, Math.min(languages.length - 1, index));
   const language = languages[selectedLanguageIndex];
   const slides = [...languageCarousel.querySelectorAll(".language-slide")];
-  slides.forEach((slide, slideIndex) => {
-    const selected = slideIndex === selectedLanguageIndex;
+  if (virtualIndex !== null) {
+    selectedVirtualIndex = virtualIndex;
+  } else {
+    const candidates = slides.filter((slide) => Number(slide.dataset.index) === selectedLanguageIndex);
+    const nearest = candidates.reduce((best, slide) => {
+      if (!best) return slide;
+      const distance = Math.abs(Number(slide.dataset.virtualIndex) - selectedVirtualIndex);
+      const bestDistance = Math.abs(Number(best.dataset.virtualIndex) - selectedVirtualIndex);
+      return distance < bestDistance ? slide : best;
+    }, null);
+    if (nearest) selectedVirtualIndex = Number(nearest.dataset.virtualIndex);
+  }
+  slides.forEach((slide) => {
+    const selected = Number(slide.dataset.virtualIndex) === selectedVirtualIndex;
     slide.classList.toggle("is-selected", selected);
     slide.setAttribute("aria-selected", String(selected));
   });
   $("#languageContinueLabel").textContent = language.enter;
   invitation.style.setProperty("--selected-background", languageGradients[selectedLanguageIndex]);
-  if (scroll && slides[selectedLanguageIndex]) {
-    const slide = slides[selectedLanguageIndex];
-    carouselScrollLockUntil = Date.now() + 700;
+  if (scroll) {
+    const slide = slides.find((item) => Number(item.dataset.virtualIndex) === selectedVirtualIndex);
+    if (!slide) return;
+    carouselScrollLockUntil = Date.now() + (instant ? 120 : 1300);
     languageCarousel.scrollTo({
       left: slide.offsetLeft - (languageCarousel.clientWidth - slide.offsetWidth) / 2,
-      behavior: "smooth"
+      behavior: instant ? "auto" : "smooth"
     });
+    window.clearTimeout(carouselResetTimer);
+    carouselResetTimer = window.setTimeout(recenterCarousel, instant ? 140 : 1400);
   }
+}
+
+function recenterCarousel() {
+  const total = languages.length;
+  let targetVirtualIndex = selectedVirtualIndex;
+  if (selectedVirtualIndex < total) targetVirtualIndex += total;
+  if (selectedVirtualIndex >= total * 2) targetVirtualIndex -= total;
+  if (targetVirtualIndex === selectedVirtualIndex) return;
+  selectLanguage(selectedLanguageIndex, { scroll: true, virtualIndex: targetVirtualIndex, instant: true });
 }
 
 function updateWelcome(index) {
@@ -351,7 +380,8 @@ function showInvitation() {
     invitation.classList.add("is-entering");
     invitation.scrollTop = 0;
     history.pushState({ screen: "invitation" }, "", "#invitation");
-    selectLanguage(selectedLanguageIndex, { scroll: true });
+    selectedVirtualIndex = languages.length + selectedLanguageIndex;
+    selectLanguage(selectedLanguageIndex, { scroll: true, virtualIndex: selectedVirtualIndex, instant: true });
     languageCarousel.querySelector(".is-selected")?.focus({ preventScroll: true });
   }, 720);
 }
@@ -416,7 +446,10 @@ function returnToLanguagePicker() {
   invitation.classList.add("is-choosing");
   languagePicker.classList.remove("is-leaving");
   invitation.scrollTo({ top: 0, behavior: "smooth" });
-  window.setTimeout(() => selectLanguage(selectedLanguageIndex, { scroll: true }), 40);
+  window.setTimeout(() => {
+    selectedVirtualIndex = languages.length + selectedLanguageIndex;
+    selectLanguage(selectedLanguageIndex, { scroll: true, virtualIndex: selectedVirtualIndex, instant: true });
+  }, 40);
 }
 
 populateLanguageCarousel();
@@ -432,7 +465,10 @@ $("#backButton").addEventListener("click", () => {
 languageContinue.addEventListener("click", openLetter);
 languageCarousel.addEventListener("click", (event) => {
   const slide = event.target.closest(".language-slide");
-  if (slide) selectLanguage(Number(slide.dataset.index), { scroll: true });
+  if (slide) selectLanguage(Number(slide.dataset.index), {
+    scroll: true,
+    virtualIndex: Number(slide.dataset.virtualIndex)
+  });
 });
 languageCarousel.addEventListener("scroll", () => {
   if (Date.now() < carouselScrollLockUntil) return;
@@ -440,17 +476,23 @@ languageCarousel.addEventListener("scroll", () => {
   carouselFrame = requestAnimationFrame(() => {
     const center = languageCarousel.getBoundingClientRect().left + languageCarousel.clientWidth / 2;
     const slides = [...languageCarousel.querySelectorAll(".language-slide")];
-    let nearestIndex = 0;
+    let nearestSlide = slides[0];
     let nearestDistance = Infinity;
-    slides.forEach((slide, index) => {
+    slides.forEach((slide) => {
       const rect = slide.getBoundingClientRect();
       const distance = Math.abs(rect.left + rect.width / 2 - center);
       if (distance < nearestDistance) {
         nearestDistance = distance;
-        nearestIndex = index;
+        nearestSlide = slide;
       }
     });
-    if (nearestIndex !== selectedLanguageIndex) selectLanguage(nearestIndex);
+    const nearestVirtualIndex = Number(nearestSlide.dataset.virtualIndex);
+    const nearestLanguageIndex = Number(nearestSlide.dataset.index);
+    if (nearestVirtualIndex !== selectedVirtualIndex) {
+      selectLanguage(nearestLanguageIndex, { virtualIndex: nearestVirtualIndex });
+    }
+    window.clearTimeout(carouselResetTimer);
+    carouselResetTimer = window.setTimeout(recenterCarousel, 140);
   });
 }, { passive: true });
 
