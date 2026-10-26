@@ -220,7 +220,7 @@ main { position: relative; z-index: 1; }
   padding: 2rem max(calc((100vw - min(64vw, 680px)) / 2), 2rem) 2.5rem;
   overflow-x: auto;
   overscroll-behavior-x: contain;
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
 }
