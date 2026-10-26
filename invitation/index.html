@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#071629" />
+    <meta
+      name="description"
+      content="An invitation for Feng Ruxuan to attend Zhang Yitao's graduation ceremony at LSE."
+    />
+    <title>To 冯薷萱 · An Invitation</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="ambient" aria-hidden="true">
+      <div class="orb orb--one"></div>
+      <div class="orb orb--two"></div>
+      <div class="orb orb--three"></div>
+      <div class="grain"></div>
+    </div>
+
+    <main>
+      <section class="screen welcome is-active" id="welcome" aria-labelledby="welcome-title">
+        <div class="welcome__content">
+          <div class="language-window">
+            <h1 id="welcome-title" class="greeting" aria-live="polite">你好，冯薷萱</h1>
+          </div>
+          <button class="enter-button" id="enterButton" type="button" aria-label="点击继续">
+            <span class="enter-button__label">点击继续</span>
+            <span class="enter-button__arrow" aria-hidden="true">↗</span>
+          </button>
+        </div>
+
+      </section>
+
+      <section class="screen invitation" id="invitation" aria-labelledby="language-title" hidden>
+        <header class="invitation__header">
+          <button class="back-button" id="backButton" type="button" aria-label="返回欢迎页">
+            <span aria-hidden="true">←</span> <span id="backLabel">返回</span>
+          </button>
+        </header>
+
+        <div class="invitation__shell">
+          <section class="language-picker" id="languagePicker" aria-label="选择阅读语言">
+            <div class="language-carousel" id="languageCarousel" role="listbox"></div>
+            <div class="language-controls">
+              <button class="language-continue" id="languageContinue" type="button">
+                <span id="languageContinueLabel">继续</span>
+                <span class="language-continue__arrow" aria-hidden="true">→</span>
+              </button>
+            </div>
+          </section>
+
+          <article class="letter" id="letter" aria-live="polite" aria-hidden="true" hidden>
+            <div class="letter__ornament" aria-hidden="true"><span></span></div>
+            <p class="letter__eyebrow" id="letterEyebrow"></p>
+            <h2 id="letterTitle"></h2>
+            <p class="letter__salutation" id="letterSalutation"></p>
+            <blockquote class="letter__poem">
+              <p id="poemLineOne"></p>
+              <p id="poemLineTwo"></p>
+            </blockquote>
+            <div class="letter__body" id="letterBody"></div>
+
+            <dl class="details">
+              <div>
+                <dt id="whenLabel"></dt>
+                <dd id="whenValue"></dd>
+              </div>
+              <div>
+                <dt id="whereLabel"></dt>
+                <dd id="whereValue"></dd>
+              </div>
+              <div>
+                <dt id="occasionLabel"></dt>
+                <dd id="occasionValue"></dd>
+              </div>
+            </dl>
+
+            <div class="letter__closing">
+              <p id="closingText"></p>
+              <p class="signature">张艺韬 <span>Yitao Zhang</span></p>
+            </div>
+          </article>
+        </div>
+
+        <footer class="invitation__footer">
+          <span>Houghton Street · London WC2A 2AE</span>
+          <span>With anticipation</span>
+        </footer>
+      </section>
+    </main>
+
+    <noscript>请启用 JavaScript 以查看这封邀请函。</noscript>
+    <script src="script.js"></script>
+  </body>
+</html>
