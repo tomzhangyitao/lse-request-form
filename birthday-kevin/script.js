@@ -53,10 +53,41 @@ class Confetti {
       });
     }
 
-    if (!this.frame) {
-      this.lastTime = performance.now();
-      this.frame = requestAnimationFrame(this.render);
+    this.animate();
+  }
+
+  burst(count = 150) {
+    if (reduceMotion) return;
+
+    for (let index = 0; index < count; index += 1) {
+      const angle = -Math.PI / 2 + (Math.random() - 0.5) * 2.35;
+      const speed = 4.2 + Math.random() * 7.2;
+      this.items.push({
+        x: this.width * 0.5 + (Math.random() - 0.5) * Math.min(this.width * 0.16, 120),
+        y: this.height * 0.63 + (Math.random() - 0.5) * 36,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        gravity: 0.095 + Math.random() * 0.045,
+        width: 2.5 + Math.random() * 4,
+        height: 6 + Math.random() * 11,
+        color: this.colors[Math.floor(Math.random() * this.colors.length)],
+        rotation: Math.random() * Math.PI * 2,
+        spin: (Math.random() - 0.5) * 0.19,
+        phase: Math.random() * Math.PI * 2,
+        opacity: 0.74 + Math.random() * 0.26,
+        life: 0,
+        maxLife: 180 + Math.random() * 110,
+        circle: Math.random() > 0.88,
+      });
     }
+
+    this.animate();
+  }
+
+  animate() {
+    if (this.frame) return;
+    this.lastTime = performance.now();
+    this.frame = requestAnimationFrame(this.render);
   }
 
   render(time) {
@@ -104,13 +135,31 @@ class Confetti {
 }
 
 const confettiCanvas = document.querySelector("#confetti");
+let homeConfetti = null;
 if (confettiCanvas) {
-  const confetti = new Confetti(confettiCanvas);
+  homeConfetti = new Confetti(confettiCanvas);
   window.addEventListener(
     "pageshow",
-    () => window.setTimeout(() => confetti.start(window.innerWidth < 700 ? 78 : 110), 120),
+    () => window.setTimeout(() => homeConfetti.start(window.innerWidth < 700 ? 78 : 110), 120),
     { once: true },
   );
+}
+
+const enterLink = document.querySelector("#enterLink");
+if (enterLink) {
+  enterLink.addEventListener("click", (event) => {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    if (document.body.classList.contains("is-celebrating")) return;
+
+    document.body.classList.add("is-celebrating");
+    homeConfetti?.burst(window.innerWidth < 700 ? 120 : 175);
+
+    window.setTimeout(
+      () => window.location.assign(enterLink.href),
+      reduceMotion ? 0 : 820,
+    );
+  });
 }
 
 const story = document.querySelector("#story");
