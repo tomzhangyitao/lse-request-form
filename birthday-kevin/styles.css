@@ -88,16 +88,31 @@ a {
 }
 
 .home h1 {
+  display: flex;
+  justify-content: center;
+  gap: 0.18em;
   margin: 0;
   color: #fff;
   font-size: clamp(4rem, 11.5vw, 10.5rem);
   font-weight: 700;
   line-height: 0.92;
-  letter-spacing: -0.078em;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.home h1 span {
+  display: inline-block;
   opacity: 0;
   filter: blur(18px);
   transform: translateY(48px) scale(0.98);
-  animation: homeTitle 1.55s 240ms var(--ease) forwards;
+}
+
+.home h1 span:first-child {
+  animation: homeWordIn 1.45s 220ms var(--ease) forwards;
+}
+
+.home h1 span:last-child {
+  animation: homeWordIn 1.55s 340ms var(--ease) forwards;
 }
 
 .home-content > p {
@@ -155,24 +170,28 @@ a {
 }
 
 .home-page.is-celebrating .home-flash {
-  animation: celebrationFlash 850ms var(--ease) forwards;
+  animation: celebrationFlash 1040ms var(--ease) forwards;
 }
 
-.home-page.is-celebrating .home h1 {
-  animation: celebrationTitle 820ms var(--ease) forwards;
+.home-page.is-celebrating .home h1 span:first-child {
+  animation: celebrationHappy 960ms var(--ease) forwards;
+}
+
+.home-page.is-celebrating .home h1 span:last-child {
+  animation: celebrationBirthday 960ms 40ms var(--ease) forwards;
 }
 
 .home-page.is-celebrating .home-content > p {
-  animation: celebrationCopy 650ms var(--ease) forwards;
+  animation: celebrationCopy 760ms var(--ease) forwards;
 }
 
 .home-page.is-celebrating .enter-link {
-  animation: celebrationButton 520ms var(--ease) forwards;
+  animation: celebrationButton 620ms var(--ease) forwards;
   pointer-events: none;
 }
 
 .home-page.is-celebrating .home-light {
-  animation: celebrationLight 900ms var(--ease) forwards;
+  animation: celebrationLight 1040ms var(--ease) forwards;
 }
 
 /* Letter is a second, separately loaded document. */
@@ -256,24 +275,65 @@ a {
   color: var(--gray);
   font-size: clamp(1.05rem, 1.6vw, 1.35rem);
   font-weight: 500;
-  letter-spacing: -0.02em;
+  letter-spacing: 0.03em;
 }
 
 .page-intro h1 {
   margin: 0;
   color: #fff;
-  font-size: clamp(5rem, 15vw, 13rem);
+  font-size: min(15vw, 13rem);
   font-weight: 700;
   line-height: 0.9;
-  letter-spacing: -0.085em;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: max(8vh, 58px);
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0.72;
+  transform: translateX(-50%);
+}
+
+.scroll-hint span {
+  width: 1px;
+  height: 42px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.scroll-hint span::after {
+  display: block;
+  width: 100%;
+  height: 46%;
+  content: "";
+  background: rgba(255, 255, 255, 0.9);
+  animation: scrollGuideLine 1.9s ease-in-out infinite;
+}
+
+.scroll-hint i {
+  width: 8px;
+  height: 8px;
+  border-right: 1px solid rgba(255, 255, 255, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+  transform: rotate(45deg);
+  animation: scrollGuideArrow 1.9s ease-in-out infinite;
 }
 
 .story-page > .story-paragraph {
   width: min(100%, 1180px);
+  max-width: 1120px;
   margin: 0;
   color: rgba(245, 245, 247, 0.94);
+  font-size: clamp(2.35rem, 5vw, 5rem);
   font-weight: 600;
-  letter-spacing: 0;
+  line-height: 1.34;
+  letter-spacing: 0.035em;
   text-align: justify;
   text-align-last: left;
   text-indent: 2em;
@@ -281,28 +341,19 @@ a {
 }
 
 .story-paragraph-medium {
-  max-width: 1000px;
-  font-size: clamp(3.2rem, 7.5vw, 7.4rem);
-  line-height: 1.08;
+  max-width: 1120px;
 }
 
 .story-paragraph-long {
-  font-size: clamp(2rem, 4.75vw, 4.7rem);
-  line-height: 1.34;
-}
-
-.story-page > .story-paragraph-statement {
-  font-size: clamp(4.5rem, 11.5vw, 10.5rem);
-  line-height: 1.02;
-  text-align: center;
-  text-align-last: center;
-  text-indent: 0;
+  max-width: 1120px;
 }
 
 .story-paragraph-final {
   max-width: 1120px;
-  font-size: clamp(3.2rem, 7.7vw, 7.7rem);
-  line-height: 1.12;
+}
+
+.story-paragraph-single {
+  white-space: nowrap;
 }
 
 .signature-copy p {
@@ -320,7 +371,7 @@ a {
   color: #fff;
   font-size: clamp(4.5rem, 11vw, 9.5rem);
   font-weight: 700;
-  letter-spacing: -0.07em;
+  letter-spacing: 0.02em;
 }
 
 .read-full {
@@ -418,7 +469,7 @@ a {
   font-size: clamp(4.1rem, 9vw, 7.8rem);
   font-weight: 700;
   line-height: 0.98;
-  letter-spacing: -0.075em;
+  letter-spacing: 0.02em;
 }
 
 .full-letter-body {
@@ -431,7 +482,7 @@ a {
   font-size: clamp(1.14rem, 2vw, 1.42rem);
   font-weight: 450;
   line-height: 2;
-  letter-spacing: 0.015em;
+  letter-spacing: 0.035em;
   text-align: justify;
   text-align-last: left;
   text-indent: 2em;
@@ -459,7 +510,7 @@ a {
   color: #1d1d1f;
   font-size: clamp(2.4rem, 5vw, 4rem);
   font-weight: 700;
-  letter-spacing: -0.055em;
+  letter-spacing: 0.02em;
 }
 
 noscript {
@@ -483,7 +534,7 @@ noscript {
   to { transform: translate(-50%, -48%) scale(1.08); }
 }
 
-@keyframes homeTitle {
+@keyframes homeWordIn {
   to { opacity: 1; filter: blur(0); transform: translateY(0) scale(1); }
 }
 
@@ -497,9 +548,14 @@ noscript {
   100% { opacity: 0; transform: translate(-50%, -50%) scale(48); }
 }
 
-@keyframes celebrationTitle {
+@keyframes celebrationHappy {
   0% { opacity: 1; filter: blur(0); transform: translateY(0) scale(1); }
-  100% { opacity: 0; filter: blur(14px); transform: translateY(-44px) scale(1.035); }
+  100% { opacity: 0; filter: blur(12px); transform: translate(-42px, -34px) rotate(-3deg) scale(1.06); }
+}
+
+@keyframes celebrationBirthday {
+  0% { opacity: 1; filter: blur(0); transform: translateY(0) scale(1); }
+  100% { opacity: 0; filter: blur(12px); transform: translate(42px, -24px) rotate(2.5deg) scale(1.06); }
 }
 
 @keyframes celebrationCopy {
@@ -519,6 +575,16 @@ noscript {
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes scrollGuideLine {
+  0% { transform: translateY(-120%); }
+  58%, 100% { transform: translateY(240%); }
+}
+
+@keyframes scrollGuideArrow {
+  0%, 24%, 100% { opacity: 0.32; transform: translateY(0) rotate(45deg); }
+  52% { opacity: 1; transform: translateY(4px) rotate(45deg); }
+}
+
 @media (max-width: 760px) {
   .home-content {
     width: 94vw;
@@ -526,7 +592,8 @@ noscript {
   }
 
   .home h1 {
-    font-size: clamp(4rem, 19vw, 6.4rem);
+    gap: 0.14em;
+    font-size: clamp(2.35rem, 10.5vw, 3.3rem);
     line-height: 0.94;
   }
 
@@ -553,33 +620,14 @@ noscript {
   }
 
   .page-intro h1 {
-    font-size: clamp(5rem, 25vw, 8rem);
+    font-size: min(15vw, 5.8rem);
     line-height: 0.92;
   }
 
-  .story-paragraph-medium {
-    font-size: clamp(2.8rem, 12.5vw, 4.8rem);
-    line-height: 1.13;
-  }
-
-  .story-paragraph-long {
-    font-size: clamp(1.75rem, 7.35vw, 2.75rem);
-    line-height: 1.43;
-    letter-spacing: -0.045em;
-  }
-
   .story-page > .story-paragraph {
-    letter-spacing: 0;
-  }
-
-  .story-paragraph-statement {
-    font-size: clamp(4.1rem, 18vw, 6.6rem);
-    line-height: 1.08;
-  }
-
-  .story-paragraph-final {
-    font-size: clamp(2.85rem, 11.8vw, 4.7rem);
-    line-height: 1.2;
+    font-size: clamp(1.6rem, 6.9vw, 2.5rem);
+    line-height: 1.45;
+    letter-spacing: 0.035em;
   }
 
   .story-light {
