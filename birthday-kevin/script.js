@@ -157,7 +157,7 @@ if (enterLink) {
 
     window.setTimeout(
       () => window.location.assign(enterLink.href),
-      reduceMotion ? 0 : 820,
+      reduceMotion ? 0 : 1040,
     );
   });
 }
@@ -211,11 +211,9 @@ if (story) {
       page.setAttribute("aria-hidden", index === nearest ? "false" : "true");
     });
 
-    const springDistance = Math.abs(position - 4);
-    const springWeight = clamp(1 - springDistance * 0.82, 0, 1);
     const introWeight = clamp(1 - position, 0, 1);
-    stage.style.setProperty("--light-opacity", (0.06 + springWeight * 0.72 + introWeight * 0.08).toFixed(3));
-    stage.style.setProperty("--light-scale", (0.78 + springWeight * 0.25 + introWeight * 0.05).toFixed(3));
+    stage.style.setProperty("--light-opacity", (0.06 + introWeight * 0.08).toFixed(3));
+    stage.style.setProperty("--light-scale", (0.78 + introWeight * 0.05).toFixed(3));
     progressBar.style.transform = `scaleX(${progress.toFixed(4)})`;
 
     if (nearest !== currentPage) currentPage = nearest;
